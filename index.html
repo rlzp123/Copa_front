@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="./style.css">
     <link rel="stylesheet" href="./store-layout.css">
 
-    
+
 </head>
 
 <body>
@@ -28,15 +28,14 @@
 
     <div id="auth-container">
         <video autoplay loop muted playsinline class="video-bg">
-            <source
-                src="./img/videoplayback.mp4"
-                type="video/mp4">
+            <source src="./img/videoplayback.mp4" type="video/mp4">
         </video>
         <div class="video-overlay"></div>
 
         <div class="auth-content">
             <div class="auth-card" id="login-form">
-                <img class="auth-logo" src="./img-logos-jogadores/Logo-Copa.jpg" alt="Mercado da Copa" width="1442" height="736">
+                <img class="auth-logo" src="./img-logos-jogadores/Logo-Copa.jpg" alt="Mercado da Copa" width="1442"
+                    height="736">
                 <div style="color: grey; font-size: 0.8rem; margin-bottom: 10px;"></div>
                 <h1>JOGADOR EXPERIENTE</h1>
                 <input type="email" id="log-email" placeholder="E-mail (ex: admin@gmail.com)">
@@ -47,7 +46,8 @@
             </div>
 
             <div class="auth-card hidden" id="register-form">
-                <img class="auth-logo" src="./img-logos-jogadores/Logo-Copa.jpg" alt="Mercado da Copa" width="1442" height="736">
+                <img class="auth-logo" src="./img-logos-jogadores/Logo-Copa.jpg" alt="Mercado da Copa" width="1442"
+                    height="736">
                 <div style="color: grey; font-size: 0.8rem; margin-bottom: 10px;">APITO INICIAL</div>
                 <h1>NOVO JOGADOR</h1>
                 <input type="text" id="reg-name" placeholder="Nome de Exibição">
@@ -101,7 +101,8 @@
         </div>
     </div>
 
-    <div id="produto-modal" class="produto-modal" role="dialog" aria-modal="true" aria-labelledby="modal-produto-nome" aria-hidden="true">
+    <div id="produto-modal" class="produto-modal" role="dialog" aria-modal="true" aria-labelledby="modal-produto-nome"
+        aria-hidden="true">
         <div class="produto-modal-conteudo">
             <button class="produto-modal-fechar" onclick="fecharProdutoModal()" aria-label="Fechar detalhes">✕</button>
             <div class="produto-modal-imagem">
@@ -109,6 +110,13 @@
             </div>
             <div class="produto-modal-info">
                 <span class="secao-kicker" id="modal-produto-categoria">CATEGORIA</span>
+
+                <!-- 1. Selo de Autenticidade Digital (Invisível por padrão, ativado via JS para itens históricos) -->
+                <div id="modal-produto-selo" class="selo-autenticidade"
+                    style="display: none; background: linear-gradient(90deg, #d4af37, #f3e5ab); color: #000; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; margin-bottom: 10px; width: fit-content; box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);">
+                    <span aria-hidden="true">🛡️</span> Selo Digital de Autenticidade Verificado
+                </div>
+
                 <h2 id="modal-produto-nome">Produto</h2>
                 <p id="modal-produto-descricao"></p>
                 <div class="produto-detalhes-grid">
@@ -117,12 +125,35 @@
                     <div><span>Condição</span><strong id="modal-produto-condicao"></strong></div>
                     <div><span>Origem</span><strong id="modal-produto-origem"></strong></div>
                 </div>
-                <button id="modal-produto-comprar" class="btn-store" onclick="adicionarProdutoModal()">ADICIONAR À SACOLA</button>
+
+                <!-- Botão de Compra Padrão -->
+                <button id="modal-produto-comprar" class="btn-store" onclick="adicionarProdutoModal()">ADICIONAR À
+                    SACOLA</button>
+
+                <!-- 3. Modalidade de Leilão / Lances (Invisível por padrão, ativado via JS para itens raros) -->
+                <div id="modal-produto-leilao" class="area-leilao"
+                    style="display: none; margin-top: 15px; padding: 15px; background: rgba(255, 69, 0, 0.1); border: 1px solid #ff4500; border-radius: 8px;">
+                    <h3 style="color: #ff4500; margin-bottom: 10px; font-size: 1.1rem;">🔥 Leilão ao Vivo</h3>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Lance Atual: <strong id="modal-lance-atual" style="font-size: 1.2rem; color: white;">R$
+                                450,00</strong></span>
+                        <span style="color: #ff4500; font-weight: bold;">Termina em: <span
+                                id="modal-tempo-leilao">02:15:30</span></span>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="number" id="input-lance" placeholder="Valor do lance"
+                            style="flex: 1; padding: 10px; border-radius: 4px; background: #222; color: white; border: 1px solid #444;"
+                            min="451">
+                        <button class="btn-store" style="background: #ff4500; margin-top: 0; padding: 10px 15px;"
+                            onclick="enviarLance()">DAR LANCE</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="chat-modal" class="produto-modal" role="dialog" aria-modal="true" aria-labelledby="chat-titulo" aria-hidden="true">
+    <div id="chat-modal" class="produto-modal" role="dialog" aria-modal="true" aria-labelledby="chat-titulo"
+        aria-hidden="true">
         <div class="chat-conteudo">
             <div class="chat-cabecalho">
                 <div>
@@ -133,19 +164,22 @@
             </div>
             <div class="chat-mensagens" id="chat-mensagens"></div>
             <form class="chat-form" onsubmit="enviarMensagemChat(event)">
-                <input id="chat-input" type="text" maxlength="240" required placeholder="Escreva uma mensagem sobre a troca..." aria-label="Mensagem">
+                <input id="chat-input" type="text" maxlength="240" required
+                    placeholder="Escreva uma mensagem sobre a troca..." aria-label="Mensagem">
                 <button class="btn-store" type="submit">ENVIAR</button>
             </form>
         </div>
     </div>
 
-    <div id="avaliacao-modal" class="produto-modal" role="dialog" aria-modal="true" aria-labelledby="avaliacao-titulo" aria-hidden="true">
+    <div id="avaliacao-modal" class="produto-modal" role="dialog" aria-modal="true" aria-labelledby="avaliacao-titulo"
+        aria-hidden="true">
         <div class="avaliacao-conteudo">
             <button class="produto-modal-fechar" onclick="fecharAvaliacao()" aria-label="Fechar avaliação">✕</button>
             <span class="secao-kicker">SUA EXPERIÊNCIA IMPORTA</span>
             <h2 id="avaliacao-titulo">Avaliar compra</h2>
             <p class="avaliacao-vendedor">Vendedor: <strong id="avaliacao-vendedor"></strong></p>
-            <label class="avaliacao-produto-label">Produto avaliado<select id="avaliacao-produto" onchange="atualizarVendedorAvaliacao()"></select></label>
+            <label class="avaliacao-produto-label">Produto avaliado<select id="avaliacao-produto"
+                    onchange="atualizarVendedorAvaliacao()"></select></label>
             <div class="avaliacao-estrelas" role="radiogroup" aria-label="Nota de 1 a 5 estrelas">
                 <button type="button" data-nota="1" onclick="selecionarNota(1)" aria-label="1 estrela">★</button>
                 <button type="button" data-nota="2" onclick="selecionarNota(2)" aria-label="2 estrelas">★</button>
@@ -153,7 +187,8 @@
                 <button type="button" data-nota="4" onclick="selecionarNota(4)" aria-label="4 estrelas">★</button>
                 <button type="button" data-nota="5" onclick="selecionarNota(5)" aria-label="5 estrelas">★</button>
             </div>
-            <textarea id="avaliacao-comentario" maxlength="280" placeholder="Conte como foi sua experiência com o produto e o vendedor."></textarea>
+            <textarea id="avaliacao-comentario" maxlength="280"
+                placeholder="Conte como foi sua experiência com o produto e o vendedor."></textarea>
             <p class="avaliacao-feedback" id="avaliacao-feedback" role="status"></p>
             <button class="btn-store" onclick="salvarAvaliacao()">PUBLICAR AVALIAÇÃO</button>
         </div>
@@ -161,12 +196,15 @@
 
     <div id="main-site" role="main" tabindex="-1">
         <nav>
-            <button type="button" class="brand-home" onclick="abrirAba('aba-vitrine')" aria-label="Mercado da Copa — ir para a vitrine">
-                <img class="brand-logo" src="./img-logos-jogadores/Logo-Copa.jpg" alt="Mercado da Copa" width="1442" height="736">
+            <button type="button" class="brand-home" onclick="abrirAba('aba-vitrine')"
+                aria-label="Mercado da Copa — ir para a vitrine">
+                <img class="brand-logo" src="./img-logos-jogadores/Logo-Copa.jpg" alt="Mercado da Copa" width="1442"
+                    height="736">
             </button>
 
             <div class="nav-acoes">
-                <button id="notificacoes-btn" onclick="toggleNotificacoes()" aria-label="Abrir notificações" aria-expanded="false">
+                <button id="notificacoes-btn" onclick="toggleNotificacoes()" aria-label="Abrir notificações"
+                    aria-expanded="false">
                     <span aria-hidden="true">♢</span>
                     <b id="notificacoes-badge">0</b>
                 </button>
@@ -179,7 +217,8 @@
                 </div>
             </div>
 
-            <button id="menu-btn" onclick="abrirMenuMobile()" aria-label="Abrir menu principal" aria-controls="mobile-menu" aria-expanded="false"
+            <button id="menu-btn" onclick="abrirMenuMobile()" aria-label="Abrir menu principal"
+                aria-controls="mobile-menu" aria-expanded="false"
                 style="display: flex; flex-direction: column; justify-content: center; align-items: center; background: transparent; border: none; padding: 10px; z-index: 100;">
                 <span class="bar"></span>
                 <span class="bar"></span>
@@ -214,8 +253,10 @@
                 <div class="hero-conteudo">
                     <span class="hero-selo">MERCADO DA COPA · EDIÇÃO DE COLECIONADOR</span>
                     <h1 id="titulo-hero-loja">A história do futebol na sua coleção.</h1>
-                    <p>Camisas, bolas e relíquias das maiores Copas do Mundo, reunidas em um só lugar para quem torce e coleciona.</p>
-                    <button class="hero-cta" onclick="irParaProdutos()">EXPLORAR A LOJA <span aria-hidden="true">→</span></button>
+                    <p>Camisas, bolas e relíquias das maiores Copas do Mundo, reunidas em um só lugar para quem torce e
+                        coleciona.</p>
+                    <button class="hero-cta" onclick="irParaProdutos()">EXPLORAR A LOJA <span
+                            aria-hidden="true">→</span></button>
                 </div>
                 <div class="hero-destaque" aria-label="Destaque da loja">
                     <span class="hero-destaque-label">PEÇA EM DESTAQUE</span>
@@ -249,7 +290,8 @@
                         <span class="secao-kicker">A TORCIDA JÁ ESCOLHEU</span>
                         <h2 id="titulo-mais-vendidos">Produtos mais vendidos</h2>
                     </div>
-                    <button class="link-secao" onclick="irParaProdutos()">VER TODOS <span aria-hidden="true">→</span></button>
+                    <button class="link-secao" onclick="irParaProdutos()">VER TODOS <span
+                            aria-hidden="true">→</span></button>
                 </div>
                 <div class="home-produtos-grid" id="produtos-mais-vendidos"></div>
             </section>
@@ -260,7 +302,8 @@
                         <span class="secao-kicker">MEMÓRIA EM CADA DETALHE</span>
                         <h2 id="titulo-achados">Achados históricos</h2>
                     </div>
-                    <button class="link-secao" onclick="filtrarPorTexto('histórica')">EXPLORAR <span aria-hidden="true">→</span></button>
+                    <button class="link-secao" onclick="filtrarPorTexto('histórica')">EXPLORAR <span
+                            aria-hidden="true">→</span></button>
                 </div>
                 <div class="home-produtos-grid" id="produtos-historicos"></div>
             </section>
@@ -271,7 +314,8 @@
                         <span class="secao-kicker secao-kicker-oferta">APITO INICIAL DAS OFERTAS</span>
                         <h2 id="titulo-ofertas">Ofertas da rodada</h2>
                     </div>
-                    <button class="link-secao" onclick="ordenarPorMenorPreco()">MENOR PREÇO <span aria-hidden="true">→</span></button>
+                    <button class="link-secao" onclick="ordenarPorMenorPreco()">MENOR PREÇO <span
+                            aria-hidden="true">→</span></button>
                 </div>
                 <div class="home-produtos-grid home-produtos-ofertas" id="produtos-ofertas"></div>
             </section>
@@ -288,24 +332,56 @@
             <div class="vitrine-controles" aria-label="Controles da vitrine">
                 <label class="busca-produto">
                     <span aria-hidden="true">⌕</span>
-                    <input id="busca-produto" type="search" placeholder="Buscar camisa, bola, medalha..." oninput="filtrarVitrine()">
+                    <input id="busca-produto" type="search" placeholder="Buscar camisa, bola, medalha..."
+                        oninput="filtrarVitrine()">
                 </label>
+
+                <label title="Selecione várias categorias segure Ctrl/Cmd" style="display:block;">
+                    <span>Seleção</span>
+                    <select id="filtro-selecao" multiple onchange="filtrarVitrine()" aria-label="Filtro por seleção"
+                        style="min-width:160px;"></select>
+                </label>
+
                 <select id="filtro-categoria" onchange="filtrarVitrine()" aria-label="Filtrar por categoria">
                     <option value="todas">Todas as categorias</option>
                 </select>
+
+                <!-- 4. Filtro por Edição da Copa -->
+                <select id="filtro-ano" onchange="filtrarVitrine()" aria-label="Filtrar por ano da Copa">
+                    <option value="todas">Todos os anos</option>
+                    <option value="1958">Copa de 1958</option>
+                    <option value="1970">Copa de 1970</option>
+                    <option value="1988">Copa de 1988</option>
+                    <option value="1994">Copa de 1994</option>
+                    <option value="2002">Copa de 2002</option>
+                    <option value="2022">Copa de 2022</option>
+                </select>
+
+                <select id="filtro-tamanho" onchange="filtrarVitrine()" aria-label="Filtrar por tamanho">
+                    <option value="todos">Todos os tamanhos</option>
+                </select>
+
                 <select id="filtro-condicao" onchange="filtrarVitrine()" aria-label="Filtrar por condição">
                     <option value="todas">Todas as condições</option>
                     <option value="novo">Novos</option>
                     <option value="usado">Usados / conservados</option>
                 </select>
-                <label class="filtro-preco">
-                    <span>R$ mínimo</span>
-                    <input id="preco-minimo" type="number" min="0" step="10" placeholder="0" oninput="filtrarVitrine()">
+
+                <label class="filtro-preco" style="display:flex; flex-direction:column; gap:6px;">
+                    <span>Faixa de preço: <strong id="preco-range-label">R$ 0 - R$ 1000</strong></span>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <input id="preco-range-min" type="range" min="0" max="1000" value="0"
+                            oninput="atualizarRangePreco(); filtrarVitrine()">
+                        <input id="preco-range-max" type="range" min="0" max="1000" value="1000"
+                            oninput="atualizarRangePreco(); filtrarVitrine()">
+                    </div>
                 </label>
-                <label class="filtro-preco">
-                    <span>R$ máximo</span>
-                    <input id="preco-maximo" type="number" min="0" step="10" placeholder="Sem limite" oninput="filtrarVitrine()">
+
+                <label style="display:flex; align-items:center; gap:8px;">
+                    <input id="somente-disponiveis" type="checkbox" onchange="filtrarVitrine()">
+                    <span>Somente disponíveis</span>
                 </label>
+
                 <select id="ordenacao-produto" onchange="filtrarVitrine()" aria-label="Ordenar produtos">
                     <option value="relevancia">Mais relevantes</option>
                     <option value="menor-preco">Menor preço</option>
@@ -350,7 +426,8 @@
                 </button>
             </div>
 
-            <div id="lista-proximos" aria-live="polite" style="max-width: 500px; margin: 0 auto; padding: 0 15px;"></div>
+            <div id="lista-proximos" aria-live="polite" style="max-width: 500px; margin: 0 auto; padding: 0 15px;">
+            </div>
 
             <section class="trocas-negociacao" aria-labelledby="titulo-negociacao">
                 <div class="home-secao-titulo">
@@ -361,8 +438,11 @@
                 </div>
                 <form class="troca-form" onsubmit="criarPropostaTroca(event)">
                     <label><span>Item que você oferece</span><select id="troca-item-ofertado" required></select></label>
-                    <label><span>Item que deseja receber</span><select id="troca-item-desejado" required></select></label>
-                    <label class="troca-form-largo"><span>Mensagem para o outro colecionador</span><textarea id="troca-mensagem" maxlength="180" placeholder="Ex: Posso enviar fotos e combinar a entrega."></textarea></label>
+                    <label><span>Item que deseja receber</span><select id="troca-item-desejado"
+                            required></select></label>
+                    <label class="troca-form-largo"><span>Mensagem para o outro colecionador</span><textarea
+                            id="troca-mensagem" maxlength="180"
+                            placeholder="Ex: Posso enviar fotos e combinar a entrega."></textarea></label>
                     <button class="btn-salvar" type="submit">ENVIAR PROPOSTA</button>
                 </form>
                 <p class="troca-feedback" id="troca-feedback" role="status"></p>
@@ -388,14 +468,34 @@
 
             <form class="venda-form" id="form-venda" onsubmit="publicarProduto(event)">
                 <div class="venda-form-grid">
-                    <label><span>Nome do produto</span><input id="venda-nome" type="text" required maxlength="80" placeholder="Ex: Camisa Brasil 1994"></label>
-                    <label><span>Categoria</span><select id="venda-categoria" required><option value="Camisas">Camisas</option><option value="Bolas">Bolas</option><option value="Equipamentos">Equipamentos</option><option value="Colecionáveis">Colecionáveis</option><option value="Acessórios">Acessórios</option><option value="Outros">Outros</option></select></label>
-                    <label class="venda-form-largo"><span>Descrição</span><textarea id="venda-descricao" required maxlength="240" placeholder="Conte a história e os detalhes da peça"></textarea></label>
-                    <label><span>Preço (R$)</span><input id="venda-preco" type="number" required min="0.01" step="0.01" placeholder="0,00"></label>
-                    <label><span>Quantidade disponível</span><input id="venda-estoque" type="number" required min="1" step="1" placeholder="1"></label>
-                    <label><span>Condição</span><select id="venda-condicao" required><option value="Novo">Novo</option><option value="Muito boa">Muito boa</option><option value="Boa">Boa</option><option value="Usada, conservada">Usada, conservada</option><option value="Restaurada">Restaurada</option></select></label>
-                    <label><span>Origem do item</span><input id="venda-origem" type="text" required maxlength="100" placeholder="Ex: Coleção pessoal, Copa de 1994"></label>
-                    <label class="venda-form-largo"><span>Imagem do produto</span><input id="venda-imagem" type="file" accept="image/*" onchange="previewImagemVenda(event)"><small>Use uma imagem nítida da peça. O arquivo é salvo localmente neste protótipo.</small></label>
+                    <label><span>Nome do produto</span><input id="venda-nome" type="text" required maxlength="80"
+                            placeholder="Ex: Camisa Brasil 1994"></label>
+                    <label><span>Categoria</span><select id="venda-categoria" required>
+                            <option value="Camisas">Camisas</option>
+                            <option value="Bolas">Bolas</option>
+                            <option value="Equipamentos">Equipamentos</option>
+                            <option value="Colecionáveis">Colecionáveis</option>
+                            <option value="Acessórios">Acessórios</option>
+                            <option value="Outros">Outros</option>
+                        </select></label>
+                    <label class="venda-form-largo"><span>Descrição</span><textarea id="venda-descricao" required
+                            maxlength="240" placeholder="Conte a história e os detalhes da peça"></textarea></label>
+                    <label><span>Preço (R$)</span><input id="venda-preco" type="number" required min="0.01" step="0.01"
+                            placeholder="0,00"></label>
+                    <label><span>Quantidade disponível</span><input id="venda-estoque" type="number" required min="1"
+                            step="1" placeholder="1"></label>
+                    <label><span>Condição</span><select id="venda-condicao" required>
+                            <option value="Novo">Novo</option>
+                            <option value="Muito boa">Muito boa</option>
+                            <option value="Boa">Boa</option>
+                            <option value="Usada, conservada">Usada, conservada</option>
+                            <option value="Restaurada">Restaurada</option>
+                        </select></label>
+                    <label><span>Origem do item</span><input id="venda-origem" type="text" required maxlength="100"
+                            placeholder="Ex: Coleção pessoal, Copa de 1994"></label>
+                    <label class="venda-form-largo"><span>Imagem do produto</span><input id="venda-imagem" type="file"
+                            accept="image/*" onchange="previewImagemVenda(event)"><small>Use uma imagem nítida da peça.
+                            O arquivo é salvo localmente neste protótipo.</small></label>
                 </div>
                 <div class="venda-preview" id="venda-preview"><span>A prévia da imagem aparecerá aqui</span></div>
                 <p class="venda-feedback" id="venda-feedback" role="status"></p>
@@ -439,17 +539,20 @@
 
                     <div class="info-group">
                         <label for="input-email">E-mail da conta</label>
-                        <input type="email" id="input-email" class="info-field-public"
-                            placeholder="seu@email.com">
+                        <input type="email" id="input-email" class="info-field-public" placeholder="seu@email.com">
                     </div>
 
                     <div class="info-group">
                         <label>Escolher Avatar de Craque</label>
                         <div class="avatar-grid-select">
-                            <img onclick="previewAvatar(this)" src="./img-avatares/vini.jpg" alt="Avatar Vini" class="avatar-option-circle selected" tabindex="0">
-                            <img onclick="previewAvatar(this)" src="./img-avatares/endrick.jpg" alt="Avatar Endrick" class="avatar-option-circle" tabindex="0">
-                            <img onclick="previewAvatar(this)" src="./img-avatares/neymar.jpg" alt="Avatar Neymar" class="avatar-option-circle" tabindex="0">
-                            <img onclick="previewAvatar(this)" src="./img-avatares/paquetá.jpg" alt="Avatar Paquetá" class="avatar-option-circle" tabindex="0">
+                            <img onclick="previewAvatar(this)" src="./img-avatares/vini.jpg" alt="Avatar Vini"
+                                class="avatar-option-circle selected" tabindex="0">
+                            <img onclick="previewAvatar(this)" src="./img-avatares/endrick.jpg" alt="Avatar Endrick"
+                                class="avatar-option-circle" tabindex="0">
+                            <img onclick="previewAvatar(this)" src="./img-avatares/neymar.jpg" alt="Avatar Neymar"
+                                class="avatar-option-circle" tabindex="0">
+                            <img onclick="previewAvatar(this)" src="./img-avatares/paquetá.jpg" alt="Avatar Paquetá"
+                                class="avatar-option-circle" tabindex="0">
                         </div>
                     </div>
 
@@ -467,7 +570,8 @@
                             placeholder="Repita a nova senha" autocomplete="new-password">
                     </div>
 
-                    <div class="info-field-private"><span aria-hidden="true">🔒</span><span id="display-private-email">E-mail privado da conta</span></div>
+                    <div class="info-field-private"><span aria-hidden="true">🔒</span><span
+                            id="display-private-email">E-mail privado da conta</span></div>
 
                     <button class="btn-salvar" onclick="salvarPerfil()">SALVAR ALTERAÇÕES</button>
                     <p class="perfil-feedback" id="perfil-feedback" role="status"></p>
@@ -510,7 +614,6 @@
     <script src="./catalogo.js"></script>
     <script src="./accessibility.js"></script>
     <script src="./script.js"></script>
-    
-</body>
 
+</body>
 </html>
