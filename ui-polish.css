@@ -136,7 +136,9 @@ nav {
     gap: var(--sp-2);
 }
 
-/* Botões de ícone da barra (notificações + carrinho) */
+/* Botões de ícone da barra (notificações + carrinho).
+   O carrinho é novo: sem estas regras ele herdaria o visual nativo do
+   navegador e destoaria dos outros dois botões. */
 #notificacoes-btn,
 #carrinho-btn,
 #menu-btn {
@@ -147,7 +149,11 @@ nav {
     width: 44px;
     height: 44px;
     padding: 0;
+    border: 1px solid #756039;
     border-radius: var(--r-sm);
+    background: #191715;
+    color: var(--brand-yellow);
+    cursor: pointer;
     transition: transform .15s var(--ease), background .2s, border-color .2s;
 }
 
@@ -468,15 +474,24 @@ nav {
     box-shadow: var(--sh-glow);
 }
 
+/* As fotos do catálogo são quadradas (1024x1024). Antes o mesmo arquivo
+   aparecia cortado em 180px na vitrine e em 150px na home; agora as duas
+   grades usam a mesma proporção e mostram a peça inteira. */
 .home-produto-card img,
 .produto-img-container img {
     aspect-ratio: 1 / 1;
+    height: auto;
     object-fit: cover;
     background: #e8d9bb;
 }
 
-.home-produto-card img {
+.produto-img-container {
     height: auto;
+    aspect-ratio: 1 / 1;
+}
+
+.produto-img-container img {
+    height: 100%;
 }
 
 .home-produto-info h3,
