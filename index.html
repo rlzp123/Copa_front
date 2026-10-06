@@ -4,12 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mercado da Copa</title>
+    <title>Mercado da Copa · Camisas, bolas e relíquias das Copas do Mundo</title>
+    <meta name="description"
+        content="Mercado da Copa: loja de colecionador com camisas, bolas, medalhas e relíquias históricas das Copas do Mundo. Compre, venda e troque itens com outros torcedores.">
+    <meta name="theme-color" content="#080808">
+    <meta name="color-scheme" content="dark">
+    <meta property="og:title" content="Mercado da Copa · A história do futebol na sua coleção">
+    <meta property="og:description"
+        content="Camisas, bolas e relíquias das maiores Copas do Mundo, reunidas em um só lugar para quem torce e coleciona.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="./img-logos-jogadores/Logo-Copa.jpg">
     <link rel="icon" type="image/jpeg" href="./img-logos-jogadores/Logo-Copa.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=BBH+Bogle&family=Permanent+Marker&display=swap">
     <link rel="stylesheet" href="./style.css">
     <link rel="stylesheet" href="./store-layout.css">
-
-
+    <link rel="stylesheet" href="./ui-polish.css">
 </head>
 
 <body>
@@ -17,32 +29,33 @@
     <a class="skip-link" href="#main-site">Ir diretamente para o conteúdo principal</a>
 
     <div id="video-intro">
-        <video id="intro-vid" autoplay muted playsinline>
+        <div class="video-loading" id="intro-loading" role="status">
+            <span class="spinner" aria-hidden="true"></span>
+            <span>Aquecendo o gramado…</span>
+        </div>
+        <video id="intro-vid" autoplay muted playsinline preload="auto">
             <source src="./img/abertura.mp4" type="video/mp4">
         </video>
-        <button id="skip-intro-btn" onclick="skipIntro()"
-            style="position:absolute; bottom:20px; right:20px; background:rgba(0,0,0,0.5); color:white; border:none; padding:10px; font-weight: bold;">
-            PULAR ABERTURA
-        </button>
+        <button id="skip-intro-btn" type="button" onclick="skipIntro()">PULAR ABERTURA</button>
     </div>
 
     <div id="auth-container">
-        <video autoplay loop muted playsinline class="video-bg">
-            <source src="./img/videoplayback.mp4" type="video/mp4">
-        </video>
-        <div class="video-overlay"></div>
+        <video autoplay loop muted playsinline preload="none" class="video-bg video-lazy" aria-hidden="true"
+            data-src="./img/videoplayback.mp4"></video>
+        <div class="video-overlay" aria-hidden="true"></div>
 
         <div class="auth-content">
             <div class="auth-card" id="login-form">
                 <img class="auth-logo" src="./img-logos-jogadores/Logo-Copa.jpg" alt="Mercado da Copa" width="1442"
                     height="736">
-                <div style="color: grey; font-size: 0.8rem; margin-bottom: 10px;"></div>
                 <h1>JOGADOR EXPERIENTE</h1>
-                <input type="email" id="log-email" placeholder="E-mail (ex: admin@gmail.com)">
-                <input type="password" id="log-pass" placeholder="Senha">
+                <input type="email" id="log-email" placeholder="E-mail (ex: admin@gmail.com)" aria-label="E-mail"
+                    autocomplete="email">
+                <input type="password" id="log-pass" placeholder="Senha" aria-label="Senha"
+                    autocomplete="current-password">
                 <button class="btn" onclick="realizarLogin()">ACESSAR LOJA</button>
                 <p class="auth-feedback" id="login-feedback" role="alert"></p>
-                <span class="toggle-link" onclick="toggleAuth()">NÃO TEM CONTA? CRIE AQUI</span>
+                <button type="button" class="toggle-link" onclick="toggleAuth()">NÃO TEM CONTA? CRIE AQUI</button>
             </div>
 
             <div class="auth-card hidden" id="register-form">
@@ -50,12 +63,15 @@
                     height="736">
                 <div style="color: grey; font-size: 0.8rem; margin-bottom: 10px;">APITO INICIAL</div>
                 <h1>NOVO JOGADOR</h1>
-                <input type="text" id="reg-name" placeholder="Nome de Exibição">
-                <input type="email" id="reg-email" placeholder="E-mail (ex: admin@gmail.com)">
-                <input type="password" id="reg-pass" placeholder="Nova Senha">
+                <input type="text" id="reg-name" placeholder="Nome de Exibição" aria-label="Nome de exibição"
+                    autocomplete="nickname" maxlength="40">
+                <input type="email" id="reg-email" placeholder="E-mail (ex: admin@gmail.com)" aria-label="E-mail"
+                    autocomplete="email">
+                <input type="password" id="reg-pass" placeholder="Nova Senha (mínimo 6 caracteres)"
+                    aria-label="Nova senha" autocomplete="new-password">
                 <button class="btn" onclick="cadastrarUsuario()">REGISTRAR</button>
                 <p class="auth-feedback" id="register-feedback" role="alert"></p>
-                <span class="toggle-link" onclick="toggleAuth()">JÁ É UM CLIENTE? FAÇA LOGIN AQUI</span>
+                <button type="button" class="toggle-link" onclick="toggleAuth()">JÁ É UM CLIENTE? FAÇA LOGIN AQUI</button>
             </div>
         </div>
     </div>
@@ -82,6 +98,7 @@
             <p style="color: #666; text-align: center; margin-top: 40px;">Seu carrinho está vazio.</p>
         </div>
         <div class="carrinho-footer">
+            <div class="frete-progresso" id="frete-progresso"></div>
             <div class="resumo-carrinho">
                 <div><span>Subtotal</span><strong id="subtotal-carrinho">R$ 0,00</strong></div>
                 <div><span>Frete</span><strong id="frete-carrinho">R$ 0,00</strong></div>
@@ -203,27 +220,41 @@
             </button>
 
             <div class="nav-acoes">
-                <button id="notificacoes-btn" onclick="toggleNotificacoes()" aria-label="Abrir notificações"
-                    aria-expanded="false">
-                    <span aria-hidden="true">♢</span>
-                    <b id="notificacoes-badge">0</b>
+                <button id="carrinho-btn" type="button" onclick="toggleCarrinho()"
+                    aria-label="Abrir meu carrinho de compras" aria-controls="carrinho-lateral">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <circle cx="9" cy="21" r="1" />
+                        <circle cx="20" cy="21" r="1" />
+                        <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
+                    </svg>
+                    <b class="cart-badge" id="cart-badge" hidden>0</b>
                 </button>
-                <div id="notificacoes-painel" class="notificacoes-painel" aria-hidden="true">
-                    <div class="notificacoes-cabecalho">
-                        <strong>Notificações</strong>
-                        <button onclick="marcarNotificacoesLidas()">MARCAR COMO LIDAS</button>
-                    </div>
-                    <div id="lista-notificacoes" aria-live="polite"></div>
-                </div>
-            </div>
 
-            <button id="menu-btn" onclick="abrirMenuMobile()" aria-label="Abrir menu principal"
-                aria-controls="mobile-menu" aria-expanded="false"
-                style="display: flex; flex-direction: column; justify-content: center; align-items: center; background: transparent; border: none; padding: 10px; z-index: 100;">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </button>
+                <div class="nav-notificacoes">
+                    <button id="notificacoes-btn" type="button" onclick="toggleNotificacoes()"
+                        aria-label="Abrir notificações" aria-controls="notificacoes-painel" aria-expanded="false">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                            <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+                            <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+                        </svg>
+                        <b id="notificacoes-badge">0</b>
+                    </button>
+                    <div id="notificacoes-painel" class="notificacoes-painel" aria-hidden="true">
+                        <div class="notificacoes-cabecalho">
+                            <strong>Notificações</strong>
+                            <button type="button" onclick="marcarNotificacoesLidas()">MARCAR COMO LIDAS</button>
+                        </div>
+                        <div id="lista-notificacoes" aria-live="polite"></div>
+                    </div>
+                </div>
+
+                <button id="menu-btn" type="button" onclick="abrirMenuMobile()" aria-label="Abrir menu principal"
+                    aria-controls="mobile-menu" aria-expanded="false">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </button>
+            </div>
 
             <div id="mobile-menu">
                 <button id="close-menu-btn" onclick="fecharMenuMobile()" aria-label="Fechar menu principal">✕</button>
@@ -257,11 +288,18 @@
                         coleciona.</p>
                     <button class="hero-cta" onclick="irParaProdutos()">EXPLORAR A LOJA <span
                             aria-hidden="true">→</span></button>
+
+                    <ul class="hero-beneficios">
+                        <li><span aria-hidden="true">🚚</span> Frete grátis acima de R$ 200</li>
+                        <li><span aria-hidden="true">🏷️</span> 10% de desconto acima de R$ 300</li>
+                        <li><span aria-hidden="true">🔄</span> Trocas entre colecionadores</li>
+                    </ul>
                 </div>
-                <div class="hero-destaque" aria-label="Destaque da loja">
-                    <span class="hero-destaque-label">PEÇA EM DESTAQUE</span>
+                <div class="hero-destaque" aria-label="Destaques da loja">
+                    <span class="hero-destaque-label">PEÇAS EM DESTAQUE</span>
                     <strong>MEMÓRIAS QUE<br>VÃO ALÉM DO JOGO</strong>
                     <span class="hero-bola" aria-hidden="true">⚽</span>
+                    <div class="hero-vitrine" id="hero-vitrine"></div>
                 </div>
             </section>
 
@@ -333,14 +371,18 @@
                 <label class="busca-produto">
                     <span aria-hidden="true">⌕</span>
                     <input id="busca-produto" type="search" placeholder="Buscar camisa, bola, medalha..."
-                        oninput="filtrarVitrine()">
+                        aria-label="Buscar produtos" oninput="filtrarVitrine()" autocomplete="off">
+                    <button type="button" class="busca-limpar" id="busca-limpar" aria-label="Limpar busca"
+                        title="Limpar busca" hidden>✕</button>
                 </label>
 
-                <label title="Selecione várias categorias segure Ctrl/Cmd" style="display:block;">
-                    <span>Seleção</span>
-                    <select id="filtro-selecao" multiple onchange="filtrarVitrine()" aria-label="Filtro por seleção"
-                        style="min-width:160px;"></select>
-                </label>
+                <div class="filtro-selecoes">
+                    <span class="filtro-rotulo" id="rotulo-selecoes">Seleções</span>
+                    <div class="filter-chips" id="chips-selecoes" role="group"
+                        aria-labelledby="rotulo-selecoes"></div>
+                    <select id="filtro-selecao" class="visualmente-oculto" multiple tabindex="-1" aria-hidden="true"
+                        onchange="filtrarVitrine()"></select>
+                </div>
 
                 <select id="filtro-categoria" onchange="filtrarVitrine()" aria-label="Filtrar por categoria">
                     <option value="todas">Todas as categorias</option>
@@ -367,17 +409,17 @@
                     <option value="usado">Usados / conservados</option>
                 </select>
 
-                <label class="filtro-preco" style="display:flex; flex-direction:column; gap:6px;">
-                    <span>Faixa de preço: <strong id="preco-range-label">R$ 0 - R$ 1000</strong></span>
-                    <div style="display:flex; gap:8px; align-items:center;">
+                <label class="filtro-preco">
+                    <span>Faixa de preço: <strong id="preco-range-label">R$ 0 – R$ 1.000</strong></span>
+                    <div class="filtro-preco-sliders">
                         <input id="preco-range-min" type="range" min="0" max="1000" value="0"
-                            oninput="atualizarRangePreco(); filtrarVitrine()">
+                            aria-label="Preço mínimo" oninput="atualizarRangePreco(); filtrarVitrine()">
                         <input id="preco-range-max" type="range" min="0" max="1000" value="1000"
-                            oninput="atualizarRangePreco(); filtrarVitrine()">
+                            aria-label="Preço máximo" oninput="atualizarRangePreco(); filtrarVitrine()">
                     </div>
                 </label>
 
-                <label style="display:flex; align-items:center; gap:8px;">
+                <label class="filtro-disponiveis">
                     <input id="somente-disponiveis" type="checkbox" onchange="filtrarVitrine()">
                     <span>Somente disponíveis</span>
                 </label>
@@ -391,8 +433,41 @@
                 <button class="limpar-filtros" onclick="limparFiltros()">LIMPAR FILTROS</button>
             </div>
 
-            <!-- CONECTADO ÀS CLASSES DE VITRINE AGORA -->
-            <div class="vitrine-grid" id="container-produtos" aria-live="polite">
+            <p class="vitrine-resultado" id="vitrine-resultado" role="status" aria-live="polite"></p>
+
+            <div class="vitrine-grid" id="container-produtos" aria-busy="true">
+                <div class="skeleton-card" aria-hidden="true">
+                    <div class="sk sk-img"></div>
+                    <div class="sk-body">
+                        <div class="sk sk-line curta"></div>
+                        <div class="sk sk-line media"></div>
+                        <div class="sk sk-line"></div>
+                    </div>
+                </div>
+                <div class="skeleton-card" aria-hidden="true">
+                    <div class="sk sk-img"></div>
+                    <div class="sk-body">
+                        <div class="sk sk-line curta"></div>
+                        <div class="sk sk-line media"></div>
+                        <div class="sk sk-line"></div>
+                    </div>
+                </div>
+                <div class="skeleton-card" aria-hidden="true">
+                    <div class="sk sk-img"></div>
+                    <div class="sk-body">
+                        <div class="sk sk-line curta"></div>
+                        <div class="sk sk-line media"></div>
+                        <div class="sk sk-line"></div>
+                    </div>
+                </div>
+                <div class="skeleton-card" aria-hidden="true">
+                    <div class="sk sk-img"></div>
+                    <div class="sk-body">
+                        <div class="sk sk-line curta"></div>
+                        <div class="sk sk-line media"></div>
+                        <div class="sk sk-line"></div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -405,7 +480,7 @@
             <div class="radar-container">
                 <div class="radar-pulse"></div>
                 <div class="radar-pulse" style="animation-delay: 1s;"></div>
-                <div class="radar-center"><i class="fas fa-satellite-dish"></i></div>
+                <div class="radar-center" aria-hidden="true">📡</div>
             </div>
 
             <div style="text-align:center; margin-bottom: 30px;">
@@ -422,7 +497,7 @@
                 </div>
                 <button class="btn" onclick="buscarPessoasProximas()"
                     style="width:auto; padding: 12px 40px; background:var(--copa-green); border-radius: 30px;">
-                    <i class="fas fa-search-location"></i> ESCANEAR ÁREA
+                    <span aria-hidden="true">🔎</span> ESCANEAR ÁREA
                 </button>
             </div>
 
@@ -609,11 +684,62 @@
                 </div>
             </div>
         </div>
+
+        <footer class="site-footer">
+            <div class="footer-grid">
+                <div>
+                    <h3>Mercado da Copa</h3>
+                    <p>Um protótipo de loja e comunidade para colecionadores de futebol: compre, venda e troque
+                        camisas, bolas e relíquias das Copas do Mundo.</p>
+                </div>
+                <div>
+                    <h3>Navegar</h3>
+                    <ul>
+                        <li><button type="button" onclick="abrirAba('aba-vitrine')">Vitrine</button></li>
+                        <li><button type="button" onclick="irParaFavoritos()">Favoritos</button></li>
+                        <li><button type="button" onclick="abrirAba('aba-vender')">Vender um item</button></li>
+                        <li><button type="button" onclick="abrirAba('aba-trocas')">Radar de trocas</button></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Minha conta</h3>
+                    <ul>
+                        <li><button type="button" onclick="abrirAba('aba-perfil')">Meu perfil</button></li>
+                        <li><button type="button" onclick="abrirAba('aba-pedidos')">Meus pedidos</button></li>
+                        <li><button type="button" onclick="toggleCarrinho()">Meu carrinho</button></li>
+                        <li><button type="button" onclick="sair()">Sair da conta</button></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Como funciona</h3>
+                    <ul>
+                        <li><span>Frete grátis acima de R$ 200</span></li>
+                        <li><span>10% de desconto acima de R$ 300</span></li>
+                        <li><span>Avaliação de vendedores por estrelas</span></li>
+                        <li><span>Chat direto para negociar trocas</span></li>
+                    </ul>
+                </div>
+            </div>
+            <p class="aviso-prototipo">
+                <strong>Protótipo acadêmico.</strong> Os dados desta demo ficam salvos apenas no seu navegador
+                (localStorage) — nenhuma compra real é processada. Imagens ilustrativas geradas por IA.
+            </p>
+            <div class="footer-base">
+                <span class="footer-selo">⚽ MERCADO DA COPA · EDIÇÃO DE COLECIONADOR</span>
+                <span>Feito para quem torce e coleciona · <span id="footer-ano">2026</span></span>
+            </div>
+        </footer>
     </div>
+
+    <button type="button" class="back-to-top" id="back-to-top" aria-label="Voltar ao topo" title="Voltar ao topo"
+        hidden>↑</button>
+
+    <div class="toast-stack" id="toast-stack" role="region" aria-label="Avisos do sistema" aria-live="polite"></div>
 
     <script src="./catalogo.js"></script>
     <script src="./accessibility.js"></script>
     <script src="./script.js"></script>
+    <script src="./ui-enhancements.js"></script>
 
 </body>
 </html>
