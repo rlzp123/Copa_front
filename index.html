@@ -1,17 +1,619 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#009b3a" />
-    <meta name="description" content="Mercado da Copa - Compre, venda e troque itens esportivos raros da história das Copas do Mundo." />
-    <link rel="icon" type="image/png" href="/icon-192.png" />
-    <link rel="apple-touch-icon" href="/icon-192.png" />
-    <title>Mercado da Copa ⚽</title>
-  </head>
-  <body>
-    <a class="skip-link" href="#main">Ir para o conteúdo principal</a>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mercado da Copa</title>
+    <link rel="icon" type="image/jpeg" href="./img-logos-jogadores/Logo-Copa.jpg">
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./store-layout.css">
+
+
+</head>
+
+<body>
+
+    <a class="skip-link" href="#main-site">Ir diretamente para o conteúdo principal</a>
+
+    <div id="video-intro">
+        <video id="intro-vid" autoplay muted playsinline>
+            <source src="./img/abertura.mp4" type="video/mp4">
+        </video>
+        <button id="skip-intro-btn" onclick="skipIntro()"
+            style="position:absolute; bottom:20px; right:20px; background:rgba(0,0,0,0.5); color:white; border:none; padding:10px; font-weight: bold;">
+            PULAR ABERTURA
+        </button>
+    </div>
+
+    <div id="auth-container">
+        <video autoplay loop muted playsinline class="video-bg">
+            <source src="./img/videoplayback.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay"></div>
+
+        <div class="auth-content">
+            <div class="auth-card" id="login-form">
+                <img class="auth-logo" src="./img-logos-jogadores/Logo-Copa.jpg" alt="Mercado da Copa" width="1442"
+                    height="736">
+                <div style="color: grey; font-size: 0.8rem; margin-bottom: 10px;"></div>
+                <h1>JOGADOR EXPERIENTE</h1>
+                <input type="email" id="log-email" placeholder="E-mail (ex: admin@gmail.com)">
+                <input type="password" id="log-pass" placeholder="Senha">
+                <button class="btn" onclick="realizarLogin()">ACESSAR LOJA</button>
+                <p class="auth-feedback" id="login-feedback" role="alert"></p>
+                <span class="toggle-link" onclick="toggleAuth()">NÃO TEM CONTA? CRIE AQUI</span>
+            </div>
+
+            <div class="auth-card hidden" id="register-form">
+                <img class="auth-logo" src="./img-logos-jogadores/Logo-Copa.jpg" alt="Mercado da Copa" width="1442"
+                    height="736">
+                <div style="color: grey; font-size: 0.8rem; margin-bottom: 10px;">APITO INICIAL</div>
+                <h1>NOVO JOGADOR</h1>
+                <input type="text" id="reg-name" placeholder="Nome de Exibição">
+                <input type="email" id="reg-email" placeholder="E-mail (ex: admin@gmail.com)">
+                <input type="password" id="reg-pass" placeholder="Nova Senha">
+                <button class="btn" onclick="cadastrarUsuario()">REGISTRAR</button>
+                <p class="auth-feedback" id="register-feedback" role="alert"></p>
+                <span class="toggle-link" onclick="toggleAuth()">JÁ É UM CLIENTE? FAÇA LOGIN AQUI</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="starlight-message">
+        <div class="message-box">
+            <div class="quote-icon">❝</div>
+            <p class="message-text">
+                <span class="highlight">É DIA DE COPA! ⚽🔥</span><br>
+                Não fique no banco de reservas. Compre, venda ou troque seus itens esportivos antes que eles desapareçam
+                do mercado!
+            </p>
+            <p class="message-author">- Neymar Jr.</p>
+            <button class="btn-store" onclick="entrarNoSistema()">IR PARA AS PRATELEIRAS</button>
+        </div>
+    </div>
+
+    <div id="carrinho-lateral">
+        <div class="carrinho-header">
+            <h2 style="margin:0; color: var(--vought-gold);">Meu Carrinho 🛒</h2>
+            <button class="fechar-cart-btn" onclick="toggleCarrinho()">✕</button>
+        </div>
+        <div class="itens-carrinho" id="lista-itens-carrinho" aria-live="polite">
+            <p style="color: #666; text-align: center; margin-top: 40px;">Seu carrinho está vazio.</p>
+        </div>
+        <div class="carrinho-footer">
+            <div class="resumo-carrinho">
+                <div><span>Subtotal</span><strong id="subtotal-carrinho">R$ 0,00</strong></div>
+                <div><span>Frete</span><strong id="frete-carrinho">R$ 0,00</strong></div>
+                <div><span>Desconto</span><strong id="desconto-carrinho">R$ 0,00</strong></div>
+                <div class="total-container"><span>TOTAL</span><strong id="preco-total-carrinho">R$ 0,00</strong></div>
+            </div>
+            <div class="payment-section">
+                <label for="metodo-pagamento">Forma de Pagamento:</label>
+                <select id="metodo-pagamento">
+                    <option value="Pix">Pix (Aprovação Imediata)</option>
+                    <option value="Cartão">Cartão de Crédito</option>
+                    <option value="Troca">Simular Troca</option>
+                </select>
+            </div>
+            <button class="btn" style="background: var(--copa-green);" onclick="finalizarCompra()">FINALIZAR
+                COMPRA</button>
+        </div>
+    </div>
+
+    <div id="produto-modal" class="produto-modal" role="dialog" aria-modal="true" aria-labelledby="modal-produto-nome"
+        aria-hidden="true">
+        <div class="produto-modal-conteudo">
+            <button class="produto-modal-fechar" onclick="fecharProdutoModal()" aria-label="Fechar detalhes">✕</button>
+            <div class="produto-modal-imagem">
+                <img id="modal-produto-imagem" src="" alt="">
+            </div>
+            <div class="produto-modal-info">
+                <span class="secao-kicker" id="modal-produto-categoria">CATEGORIA</span>
+
+                <!-- 1. Selo de Autenticidade Digital (Invisível por padrão, ativado via JS para itens históricos) -->
+                <div id="modal-produto-selo" class="selo-autenticidade"
+                    style="display: none; background: linear-gradient(90deg, #d4af37, #f3e5ab); color: #000; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; margin-bottom: 10px; width: fit-content; box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);">
+                    <span aria-hidden="true">🛡️</span> Selo Digital de Autenticidade Verificado
+                </div>
+
+                <h2 id="modal-produto-nome">Produto</h2>
+                <p id="modal-produto-descricao"></p>
+                <div class="produto-detalhes-grid">
+                    <div><span>Preço</span><strong id="modal-produto-preco"></strong></div>
+                    <div><span>Disponibilidade</span><strong id="modal-produto-estoque"></strong></div>
+                    <div><span>Condição</span><strong id="modal-produto-condicao"></strong></div>
+                    <div><span>Origem</span><strong id="modal-produto-origem"></strong></div>
+                </div>
+
+                <!-- Botão de Compra Padrão -->
+                <button id="modal-produto-comprar" class="btn-store" onclick="adicionarProdutoModal()">ADICIONAR À
+                    SACOLA</button>
+
+                <!-- 3. Modalidade de Leilão / Lances (Invisível por padrão, ativado via JS para itens raros) -->
+                <div id="modal-produto-leilao" class="area-leilao"
+                    style="display: none; margin-top: 15px; padding: 15px; background: rgba(255, 69, 0, 0.1); border: 1px solid #ff4500; border-radius: 8px;">
+                    <h3 style="color: #ff4500; margin-bottom: 10px; font-size: 1.1rem;">🔥 Leilão ao Vivo</h3>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Lance Atual: <strong id="modal-lance-atual" style="font-size: 1.2rem; color: white;">R$
+                                450,00</strong></span>
+                        <span style="color: #ff4500; font-weight: bold;">Termina em: <span
+                                id="modal-tempo-leilao">02:15:30</span></span>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="number" id="input-lance" placeholder="Valor do lance"
+                            style="flex: 1; padding: 10px; border-radius: 4px; background: #222; color: white; border: 1px solid #444;"
+                            min="451">
+                        <button class="btn-store" style="background: #ff4500; margin-top: 0; padding: 10px 15px;"
+                            onclick="enviarLance()">DAR LANCE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="chat-modal" class="produto-modal" role="dialog" aria-modal="true" aria-labelledby="chat-titulo"
+        aria-hidden="true">
+        <div class="chat-conteudo">
+            <div class="chat-cabecalho">
+                <div>
+                    <span class="secao-kicker">CONVERSA DA NEGOCIAÇÃO</span>
+                    <h2 id="chat-titulo">Chat da troca</h2>
+                </div>
+                <button class="produto-modal-fechar" onclick="fecharChat()" aria-label="Fechar conversa">✕</button>
+            </div>
+            <div class="chat-mensagens" id="chat-mensagens"></div>
+            <form class="chat-form" onsubmit="enviarMensagemChat(event)">
+                <input id="chat-input" type="text" maxlength="240" required
+                    placeholder="Escreva uma mensagem sobre a troca..." aria-label="Mensagem">
+                <button class="btn-store" type="submit">ENVIAR</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="avaliacao-modal" class="produto-modal" role="dialog" aria-modal="true" aria-labelledby="avaliacao-titulo"
+        aria-hidden="true">
+        <div class="avaliacao-conteudo">
+            <button class="produto-modal-fechar" onclick="fecharAvaliacao()" aria-label="Fechar avaliação">✕</button>
+            <span class="secao-kicker">SUA EXPERIÊNCIA IMPORTA</span>
+            <h2 id="avaliacao-titulo">Avaliar compra</h2>
+            <p class="avaliacao-vendedor">Vendedor: <strong id="avaliacao-vendedor"></strong></p>
+            <label class="avaliacao-produto-label">Produto avaliado<select id="avaliacao-produto"
+                    onchange="atualizarVendedorAvaliacao()"></select></label>
+            <div class="avaliacao-estrelas" role="radiogroup" aria-label="Nota de 1 a 5 estrelas">
+                <button type="button" data-nota="1" onclick="selecionarNota(1)" aria-label="1 estrela">★</button>
+                <button type="button" data-nota="2" onclick="selecionarNota(2)" aria-label="2 estrelas">★</button>
+                <button type="button" data-nota="3" onclick="selecionarNota(3)" aria-label="3 estrelas">★</button>
+                <button type="button" data-nota="4" onclick="selecionarNota(4)" aria-label="4 estrelas">★</button>
+                <button type="button" data-nota="5" onclick="selecionarNota(5)" aria-label="5 estrelas">★</button>
+            </div>
+            <textarea id="avaliacao-comentario" maxlength="280"
+                placeholder="Conte como foi sua experiência com o produto e o vendedor."></textarea>
+            <p class="avaliacao-feedback" id="avaliacao-feedback" role="status"></p>
+            <button class="btn-store" onclick="salvarAvaliacao()">PUBLICAR AVALIAÇÃO</button>
+        </div>
+    </div>
+
+    <div id="main-site" role="main" tabindex="-1">
+        <nav>
+            <button type="button" class="brand-home" onclick="abrirAba('aba-vitrine')"
+                aria-label="Mercado da Copa — ir para a vitrine">
+                <img class="brand-logo" src="./img-logos-jogadores/Logo-Copa.jpg" alt="Mercado da Copa" width="1442"
+                    height="736">
+            </button>
+
+            <div class="nav-acoes">
+                <button id="notificacoes-btn" onclick="toggleNotificacoes()" aria-label="Abrir notificações"
+                    aria-expanded="false">
+                    <span aria-hidden="true">♢</span>
+                    <b id="notificacoes-badge">0</b>
+                </button>
+                <div id="notificacoes-painel" class="notificacoes-painel" aria-hidden="true">
+                    <div class="notificacoes-cabecalho">
+                        <strong>Notificações</strong>
+                        <button onclick="marcarNotificacoesLidas()">MARCAR COMO LIDAS</button>
+                    </div>
+                    <div id="lista-notificacoes" aria-live="polite"></div>
+                </div>
+            </div>
+
+            <button id="menu-btn" onclick="abrirMenuMobile()" aria-label="Abrir menu principal"
+                aria-controls="mobile-menu" aria-expanded="false"
+                style="display: flex; flex-direction: column; justify-content: center; align-items: center; background: transparent; border: none; padding: 10px; z-index: 100;">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+
+            <div id="mobile-menu">
+                <button id="close-menu-btn" onclick="fecharMenuMobile()" aria-label="Fechar menu principal">✕</button>
+                <div
+                    style="display: flex; flex-direction: column; align-items: center; margin-top: 10px; margin-bottom: 20px;">
+                    <img id="profile-avatar-menu" src="./img-avatares/vini.jpg" alt="Avatar Menu"
+                        style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--vought-gold); object-fit: cover; margin-bottom: 10px;">
+                    <span id="welcome-text-menu"
+                        style="font-weight: bold; color: white; font-size: 1.5rem; font-family: 'Impact', sans-serif; letter-spacing: 1px;">TORCEDOR_10</span>
+                </div>
+
+                <div class="menu-conteudo">
+                    <a role="button" tabindex="0" onclick="abrirAba('aba-vitrine')">🏪 VER VITRINE</a>
+                    <a role="button" tabindex="0" onclick="irParaFavoritos()">♡ MEUS FAVORITOS</a>
+                    <a role="button" tabindex="0" onclick="abrirAba('aba-vender')">＋ VENDER UM ITEM</a>
+                    <a role="button" tabindex="0" onclick="toggleCarrinho()">🛒 MEU CARRINHO</a>
+                    <a role="button" tabindex="0" onclick="abrirAba('aba-trocas')">🔄 TROCAS</a>
+                    <a role="button" tabindex="0" onclick="abrirAba('aba-pedidos')">🚵 MEUS PEDIDOS</a>
+                    <a role="button" tabindex="0" onclick="abrirAba('aba-perfil')">⚙️ MEU PERFIL</a>
+                    <a role="button" tabindex="0" style="color: #ff4500;" onclick="sair()">🚪 SAIR</a>
+                </div>
+            </div>
+        </nav>
+
+        <div id="aba-vitrine" class="secao-aba ativa">
+            <section class="hero-loja" aria-labelledby="titulo-hero-loja">
+                <div class="hero-conteudo">
+                    <span class="hero-selo">MERCADO DA COPA · EDIÇÃO DE COLECIONADOR</span>
+                    <h1 id="titulo-hero-loja">A história do futebol na sua coleção.</h1>
+                    <p>Camisas, bolas e relíquias das maiores Copas do Mundo, reunidas em um só lugar para quem torce e
+                        coleciona.</p>
+                    <button class="hero-cta" onclick="irParaProdutos()">EXPLORAR A LOJA <span
+                            aria-hidden="true">→</span></button>
+                </div>
+                <div class="hero-destaque" aria-label="Destaque da loja">
+                    <span class="hero-destaque-label">PEÇA EM DESTAQUE</span>
+                    <strong>MEMÓRIAS QUE<br>VÃO ALÉM DO JOGO</strong>
+                    <span class="hero-bola" aria-hidden="true">⚽</span>
+                </div>
+            </section>
+
+            <div class="home-cabecalho">
+                <div>
+                    <span class="secao-kicker">SELEÇÃO DA SEMANA</span>
+                    <h2>Escolhas para quem conhece a história</h2>
+                </div>
+                <span class="home-contagem" id="home-contagem-produtos">Catálogo atualizado</span>
+            </div>
+
+            <section class="home-secao favoritos-secao" id="secao-favoritos" aria-labelledby="titulo-favoritos">
+                <div class="home-secao-titulo">
+                    <div>
+                        <span class="secao-kicker">SUA LISTA DE DESEJOS</span>
+                        <h2 id="titulo-favoritos">Meus Favoritos</h2>
+                    </div>
+                    <span class="home-contagem" id="contagem-favoritos">0 itens salvos</span>
+                </div>
+                <div class="home-produtos-grid" id="produtos-favoritos"></div>
+            </section>
+
+            <section class="home-secao" aria-labelledby="titulo-mais-vendidos">
+                <div class="home-secao-titulo">
+                    <div>
+                        <span class="secao-kicker">A TORCIDA JÁ ESCOLHEU</span>
+                        <h2 id="titulo-mais-vendidos">Produtos mais vendidos</h2>
+                    </div>
+                    <button class="link-secao" onclick="irParaProdutos()">VER TODOS <span
+                            aria-hidden="true">→</span></button>
+                </div>
+                <div class="home-produtos-grid" id="produtos-mais-vendidos"></div>
+            </section>
+
+            <section class="home-secao home-secao-alternada" aria-labelledby="titulo-achados">
+                <div class="home-secao-titulo">
+                    <div>
+                        <span class="secao-kicker">MEMÓRIA EM CADA DETALHE</span>
+                        <h2 id="titulo-achados">Achados históricos</h2>
+                    </div>
+                    <button class="link-secao" onclick="filtrarPorTexto('histórica')">EXPLORAR <span
+                            aria-hidden="true">→</span></button>
+                </div>
+                <div class="home-produtos-grid" id="produtos-historicos"></div>
+            </section>
+
+            <section class="home-secao" aria-labelledby="titulo-ofertas">
+                <div class="home-secao-titulo">
+                    <div>
+                        <span class="secao-kicker secao-kicker-oferta">APITO INICIAL DAS OFERTAS</span>
+                        <h2 id="titulo-ofertas">Ofertas da rodada</h2>
+                    </div>
+                    <button class="link-secao" onclick="ordenarPorMenorPreco()">MENOR PREÇO <span
+                            aria-hidden="true">→</span></button>
+                </div>
+                <div class="home-produtos-grid home-produtos-ofertas" id="produtos-ofertas"></div>
+            </section>
+
+            <div class="vitrine-todos" id="todos-produtos">
+                <div class="home-secao-titulo">
+                    <div>
+                        <span class="secao-kicker">CATÁLOGO COMPLETO</span>
+                        <h2>Todos os artigos</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vitrine-controles" aria-label="Controles da vitrine">
+                <label class="busca-produto">
+                    <span aria-hidden="true">⌕</span>
+                    <input id="busca-produto" type="search" placeholder="Buscar camisa, bola, medalha..."
+                        oninput="filtrarVitrine()">
+                </label>
+
+                <label title="Selecione várias categorias segure Ctrl/Cmd" style="display:block;">
+                    <span>Seleção</span>
+                    <select id="filtro-selecao" multiple onchange="filtrarVitrine()" aria-label="Filtro por seleção"
+                        style="min-width:160px;"></select>
+                </label>
+
+                <select id="filtro-categoria" onchange="filtrarVitrine()" aria-label="Filtrar por categoria">
+                    <option value="todas">Todas as categorias</option>
+                </select>
+
+                <!-- 4. Filtro por Edição da Copa -->
+                <select id="filtro-ano" onchange="filtrarVitrine()" aria-label="Filtrar por ano da Copa">
+                    <option value="todas">Todos os anos</option>
+                    <option value="1958">Copa de 1958</option>
+                    <option value="1970">Copa de 1970</option>
+                    <option value="1988">Copa de 1988</option>
+                    <option value="1994">Copa de 1994</option>
+                    <option value="2002">Copa de 2002</option>
+                    <option value="2022">Copa de 2022</option>
+                </select>
+
+                <select id="filtro-tamanho" onchange="filtrarVitrine()" aria-label="Filtrar por tamanho">
+                    <option value="todos">Todos os tamanhos</option>
+                </select>
+
+                <select id="filtro-condicao" onchange="filtrarVitrine()" aria-label="Filtrar por condição">
+                    <option value="todas">Todas as condições</option>
+                    <option value="novo">Novos</option>
+                    <option value="usado">Usados / conservados</option>
+                </select>
+
+                <label class="filtro-preco" style="display:flex; flex-direction:column; gap:6px;">
+                    <span>Faixa de preço: <strong id="preco-range-label">R$ 0 - R$ 1000</strong></span>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <input id="preco-range-min" type="range" min="0" max="1000" value="0"
+                            oninput="atualizarRangePreco(); filtrarVitrine()">
+                        <input id="preco-range-max" type="range" min="0" max="1000" value="1000"
+                            oninput="atualizarRangePreco(); filtrarVitrine()">
+                    </div>
+                </label>
+
+                <label style="display:flex; align-items:center; gap:8px;">
+                    <input id="somente-disponiveis" type="checkbox" onchange="filtrarVitrine()">
+                    <span>Somente disponíveis</span>
+                </label>
+
+                <select id="ordenacao-produto" onchange="filtrarVitrine()" aria-label="Ordenar produtos">
+                    <option value="relevancia">Mais relevantes</option>
+                    <option value="menor-preco">Menor preço</option>
+                    <option value="maior-preco">Maior preço</option>
+                    <option value="nome">Ordem alfabética</option>
+                </select>
+                <button class="limpar-filtros" onclick="limparFiltros()">LIMPAR FILTROS</button>
+            </div>
+
+            <!-- CONECTADO ÀS CLASSES DE VITRINE AGORA -->
+            <div class="vitrine-grid" id="container-produtos" aria-live="polite">
+            </div>
+        </div>
+
+        <div id="aba-trocas" class="secao-aba">
+            <header style="text-align:center; padding: 20px;">
+                <h1 style="color:var(--vought-gold); font-size: 2rem;">RADAR DE TROCAS</h1>
+                <p style="color:#888;">Colecionadores ativos perto de você</p>
+            </header>
+
+            <div class="radar-container">
+                <div class="radar-pulse"></div>
+                <div class="radar-pulse" style="animation-delay: 1s;"></div>
+                <div class="radar-center"><i class="fas fa-satellite-dish"></i></div>
+            </div>
+
+            <div style="text-align:center; margin-bottom: 30px;">
+                <div class="radar-filtros">
+                    <label for="filtro-radar">Mostrar colecionadores que procuram:</label>
+                    <select id="filtro-radar" onchange="filtrarRadar()">
+                        <option value="todos">Todos os artigos</option>
+                        <option value="Camisas">Camisas</option>
+                        <option value="Bolas">Bolas</option>
+                        <option value="Colecionáveis">Colecionáveis</option>
+                        <option value="Equipamentos">Equipamentos</option>
+                        <option value="Acessórios">Acessórios</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="buscarPessoasProximas()"
+                    style="width:auto; padding: 12px 40px; background:var(--copa-green); border-radius: 30px;">
+                    <i class="fas fa-search-location"></i> ESCANEAR ÁREA
+                </button>
+            </div>
+
+            <div id="lista-proximos" aria-live="polite" style="max-width: 500px; margin: 0 auto; padding: 0 15px;">
+            </div>
+
+            <section class="trocas-negociacao" aria-labelledby="titulo-negociacao">
+                <div class="home-secao-titulo">
+                    <div>
+                        <span class="secao-kicker">NEGOCIAÇÃO ENTRE TORCEDORES</span>
+                        <h2 id="titulo-negociacao">Propor uma troca</h2>
+                    </div>
+                </div>
+                <form class="troca-form" onsubmit="criarPropostaTroca(event)">
+                    <label><span>Item que você oferece</span><select id="troca-item-ofertado" required></select></label>
+                    <label><span>Item que deseja receber</span><select id="troca-item-desejado"
+                            required></select></label>
+                    <label class="troca-form-largo"><span>Mensagem para o outro colecionador</span><textarea
+                            id="troca-mensagem" maxlength="180"
+                            placeholder="Ex: Posso enviar fotos e combinar a entrega."></textarea></label>
+                    <button class="btn-salvar" type="submit">ENVIAR PROPOSTA</button>
+                </form>
+                <p class="troca-feedback" id="troca-feedback" role="status"></p>
+
+                <div class="trocas-propostas">
+                    <div class="home-secao-titulo">
+                        <div>
+                            <span class="secao-kicker">CENTRAL DE NEGOCIAÇÕES</span>
+                            <h2>Propostas recebidas e enviadas</h2>
+                        </div>
+                    </div>
+                    <div id="lista-propostas-troca" aria-live="polite"></div>
+                </div>
+            </section>
+        </div>
+
+        <div id="aba-vender" class="secao-aba">
+            <header class="pagina-cabecalho">
+                <span class="secao-kicker">ANUNCIE PARA A TORCIDA</span>
+                <h1>Vender um item</h1>
+                <p>Compartilhe uma peça da sua coleção com outros torcedores.</p>
+            </header>
+
+            <form class="venda-form" id="form-venda" onsubmit="publicarProduto(event)">
+                <div class="venda-form-grid">
+                    <label><span>Nome do produto</span><input id="venda-nome" type="text" required maxlength="80"
+                            placeholder="Ex: Camisa Brasil 1994"></label>
+                    <label><span>Categoria</span><select id="venda-categoria" required>
+                            <option value="Camisas">Camisas</option>
+                            <option value="Bolas">Bolas</option>
+                            <option value="Equipamentos">Equipamentos</option>
+                            <option value="Colecionáveis">Colecionáveis</option>
+                            <option value="Acessórios">Acessórios</option>
+                            <option value="Outros">Outros</option>
+                        </select></label>
+                    <label class="venda-form-largo"><span>Descrição</span><textarea id="venda-descricao" required
+                            maxlength="240" placeholder="Conte a história e os detalhes da peça"></textarea></label>
+                    <label><span>Preço (R$)</span><input id="venda-preco" type="number" required min="0.01" step="0.01"
+                            placeholder="0,00"></label>
+                    <label><span>Quantidade disponível</span><input id="venda-estoque" type="number" required min="1"
+                            step="1" placeholder="1"></label>
+                    <label><span>Condição</span><select id="venda-condicao" required>
+                            <option value="Novo">Novo</option>
+                            <option value="Muito boa">Muito boa</option>
+                            <option value="Boa">Boa</option>
+                            <option value="Usada, conservada">Usada, conservada</option>
+                            <option value="Restaurada">Restaurada</option>
+                        </select></label>
+                    <label><span>Origem do item</span><input id="venda-origem" type="text" required maxlength="100"
+                            placeholder="Ex: Coleção pessoal, Copa de 1994"></label>
+                    <label class="venda-form-largo"><span>Imagem do produto</span><input id="venda-imagem" type="file"
+                            accept="image/*" onchange="previewImagemVenda(event)"><small>Use uma imagem nítida da peça.
+                            O arquivo é salvo localmente neste protótipo.</small></label>
+                </div>
+                <div class="venda-preview" id="venda-preview"><span>A prévia da imagem aparecerá aqui</span></div>
+                <p class="venda-feedback" id="venda-feedback" role="status"></p>
+                <button class="btn-salvar" type="submit">PUBLICAR NA VITRINE</button>
+            </form>
+        </div>
+
+        <!-- ABA PERFIL (PREMIUM) -->
+        <div id="aba-perfil" class="secao-aba">
+            <header class="pagina-cabecalho">
+                <span class="secao-kicker">IDENTIDADE DO COLECIONADOR</span>
+                <h1>Meu perfil</h1>
+                <p>Gerencie sua identidade pública, sua coleção e sua reputação no mercado.</p>
+            </header>
+
+            <div class="profile-card">
+                <div class="profile-content">
+
+                    <div style="text-align: center; margin-bottom: 40px;">
+                        <div class="avatar-container-main">
+                            <img id="perfil-avatar-view" src="./img-avatares/vini.jpg" alt="Avatar Principal">
+                            <span class="badge-publico">PÚBLICO</span>
+                        </div>
+                        <h2 id="perfil-nome-view"
+                            style="margin-top: 15px; color: white; font-size: 1.8rem; letter-spacing: 2px; text-shadow: 0 2px 10px rgba(255,255,255,0.1);">
+                            TORCEDOR_10</h2>
+                        <p class="perfil-status-text">Colecionador ativo no Mercado da Copa</p>
+                    </div>
+
+                    <div class="perfil-estatisticas" aria-label="Resumo do perfil">
+                        <div><strong id="perfil-total-anuncios">0</strong><span>Anúncios</span></div>
+                        <div><strong id="perfil-total-favoritos">0</strong><span>Favoritos</span></div>
+                        <div><strong id="perfil-reputacao">Sem nota</strong><span>Reputação</span></div>
+                    </div>
+
+                    <div class="info-group">
+                        <label>Nome de Exibição (Visto por outros)</label>
+                        <input type="text" id="input-display-name" class="info-field-public"
+                            placeholder="Ex: RYAN_HEXA_26">
+                    </div>
+
+                    <div class="info-group">
+                        <label for="input-email">E-mail da conta</label>
+                        <input type="email" id="input-email" class="info-field-public" placeholder="seu@email.com">
+                    </div>
+
+                    <div class="info-group">
+                        <label>Escolher Avatar de Craque</label>
+                        <div class="avatar-grid-select">
+                            <img onclick="previewAvatar(this)" src="./img-avatares/vini.jpg" alt="Avatar Vini"
+                                class="avatar-option-circle selected" tabindex="0">
+                            <img onclick="previewAvatar(this)" src="./img-avatares/endrick.jpg" alt="Avatar Endrick"
+                                class="avatar-option-circle" tabindex="0">
+                            <img onclick="previewAvatar(this)" src="./img-avatares/neymar.jpg" alt="Avatar Neymar"
+                                class="avatar-option-circle" tabindex="0">
+                            <img onclick="previewAvatar(this)" src="./img-avatares/paquetá.jpg" alt="Avatar Paquetá"
+                                class="avatar-option-circle" tabindex="0">
+                        </div>
+                    </div>
+
+                    <hr style="border: 0; border-top: 1px solid rgba(255, 255, 255, 0.05); margin: 35px 0;">
+
+                    <div class="info-group">
+                        <label for="input-password">Alterar senha <span class="campo-opcional">(opcional)</span></label>
+                        <input type="password" id="input-password" class="info-field-public"
+                            placeholder="Deixe vazio para manter a senha atual" autocomplete="new-password">
+                    </div>
+
+                    <div class="info-group">
+                        <label for="input-password-confirm">Confirmar nova senha</label>
+                        <input type="password" id="input-password-confirm" class="info-field-public"
+                            placeholder="Repita a nova senha" autocomplete="new-password">
+                    </div>
+
+                    <div class="info-field-private"><span aria-hidden="true">🔒</span><span
+                            id="display-private-email">E-mail privado da conta</span></div>
+
+                    <button class="btn-salvar" onclick="salvarPerfil()">SALVAR ALTERAÇÕES</button>
+                    <p class="perfil-feedback" id="perfil-feedback" role="status"></p>
+
+                </div>
+            </div>
+        </div>
+
+        <div id="aba-pedidos" class="secao-aba">
+            <header style="text-align:center; padding:20px 5%;">
+                <h1 style="font-size: 2.5rem; color: var(--vought-gold); margin:0;">STATUS DAS NEGOCIAÇÕES</h1>
+                <p style="color: #aaa;">Acompanhe o andamento das suas compras e trocas.</p>
+            </header>
+
+            <div class="kanban-board">
+                <div class="kanban-coluna col-pendente">
+                    <h3
+                        style="color: var(--vought-red); text-transform: uppercase; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px;">
+                        🔴 Analisando Proposta</h3>
+                    <div id="col-pending" style="display:flex; flex-direction: column; gap:10px;"></div>
+                </div>
+
+                <div class="kanban-coluna col-preparando">
+                    <h3
+                        style="color: var(--vought-gold); text-transform: uppercase; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px;">
+                        🟡 Embalando Item</h3>
+                    <div id="col-preparing" style="display:flex; flex-direction: column; gap:10px;"></div>
+                </div>
+
+                <div class="kanban-coluna col-entregue">
+                    <h3
+                        style="color: var(--copa-green); text-transform: uppercase; text-align: center; border-bottom: 1px solid #333; padding-bottom: 10px;">
+                        🟢 Negócio Fechado</h3>
+                    <div id="col-ready" style="display:flex; flex-direction: column; gap:10px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./catalogo.js"></script>
+    <script src="./accessibility.js"></script>
+    <script src="./script.js"></script>
+
+</body>
 </html>
